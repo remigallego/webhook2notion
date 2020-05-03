@@ -4,5 +4,3 @@
   "repository": "https://git.heroku.com/nameless-scrubland-94978.git",
   "keywords": ["notion", "webhook", "notion-py"]
 }
-
-// https://notionapi.herokuapp.com/create_todo?todo=Test&token=a6cda7230f56aa6c536545369478766b2aba895bc66e7c9a287a8c99ff35e116f6b418ee55e06a896b10132e228d41d9d8b21f475062da83ed8d459ab25b2148b618d8f4ff98fc8449a12ab24d6b
