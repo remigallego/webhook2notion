@@ -4,9 +4,7 @@ from notion.client import NotionClient
 from flask import Flask
 from flask import request
 
-
 app = Flask(__name__)
-
 
 def createNotionTask(token, collectionURL, content):
     # notion
@@ -20,10 +18,10 @@ def createNotionTask(token, collectionURL, content):
 def create_todo():
 
     todo = request.args.get('todo')
-    token_v2 = os.environ.get("TOKEN")
+    token_v2 = request.args.get('token')
     url = os.environ.get("URL")
     createNotionTask(token_v2, url, todo)
-    return f'added {todo} to Notion'
+    return f'added {todo} to Notion!!! Yeah'
 
 
 if __name__ == '__main__':
