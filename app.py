@@ -6,6 +6,18 @@ from flask import request
 
 app = Flask(__name__)
 
+class Todo:
+  title = ''
+  date = ''
+
+def construct_todo(title, date):
+    todo = Todo()
+    todo.title = title
+    todo.date = date
+    return todo
+    
+
+
 def createNotionTask(token, collectionURL, content):
     # notion
     client = NotionClient(token)
@@ -17,13 +29,11 @@ def createNotionTask(token, collectionURL, content):
 
 @app.route('/create_todo', methods=['GET'])
 def create_todo():
-
-    todo.title = request.args.get('todo')
-    todo.date = request.args.get('date')
+    todo = construct_todo(request.args.get('todo'), request.args.get('date'))
     token_v2 = request.args.get('token')
     url = os.environ.get("URL")
     createNotionTask(token_v2, url, todo)
-    return f'added {todo} to Notion!!! Yeah'
+    return f'✅ Added {todo.title} to Notion!'
 
 
 if __name__ == '__main__':
