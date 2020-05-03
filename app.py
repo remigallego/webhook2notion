@@ -17,7 +17,7 @@ class Todo:
 def construct_todo(title, date):
     todo = Todo()
     todo.title = title
-    todo.date = datetime.strptime(date, "%d/%m/%Y")
+    todo.date = datetime.strptime(date, "%d-%m-%Y")
     return todo
 
 def createNotionTask(token, collectionURL, content):
