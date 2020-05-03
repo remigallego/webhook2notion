@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 import os
-from datetime import datetime, date
+from datetime import datetime
 from notion.collection import NotionDate
 from notion.client import NotionClient
 from math import pi
