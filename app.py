@@ -1,8 +1,10 @@
 
+# -*- coding: utf-8 -*-
 import os
 from datetime import datetime, date
-from notion import notion
+from notion.collection import NotionDate
 from notion.client import NotionClient
+from math import pi
 from flask import Flask
 from flask import request
 
@@ -24,7 +26,7 @@ def createNotionTask(token, collectionURL, content):
     cv = client.get_collection_view(collectionURL)
     row = cv.collection.add_row()
     row.title = content.title
-    row.date = notion.collection.NotionDate(date.today())
+    row.date = NotionDate(date.today())
 
 @app.route('/create_todo', methods=['GET'])
 def create_todo():
