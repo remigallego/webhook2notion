@@ -1,6 +1,7 @@
 
 import os
 from datetime import datetime, date
+from notion import notion
 from notion.client import NotionClient
 from flask import Flask
 from flask import request
