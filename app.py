@@ -24,7 +24,7 @@ def createNotionTask(token, collectionURL, content):
     cv = client.get_collection_view(collectionURL)
     row = cv.collection.add_row()
     row.title = content.title
-    row['Due Date'] = content.date
+    row.date = content.date
 
 
 @app.route('/create_todo', methods=['GET'])
