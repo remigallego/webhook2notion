@@ -17,7 +17,7 @@ class Todo:
 def construct_todo(title, date):
     todo = Todo()
     todo.title = title
-    todo.date = date
+    todo.date = datetime.strptime(date, "%d/%m/%Y")
     return todo
 
 def createNotionTask(token, collectionURL, content):
@@ -26,7 +26,7 @@ def createNotionTask(token, collectionURL, content):
     cv = client.get_collection_view(collectionURL)
     row = cv.collection.add_row()
     row.title = content.title
-    row.date = NotionDate(date.fromisoformat(content.date))
+    row.date = NotionDate(content.date)
     
 @app.route('/create_todo', methods=['GET'])
 def create_todo():
@@ -36,8 +36,3 @@ def create_todo():
     createNotionTask(token_v2, url, todo)
     return f'✅ Added {todo.title} to Notion!'
 
-
-if __name__ == '__main__':
-    app.debug = True
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
