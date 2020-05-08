@@ -10,8 +10,6 @@ from flask import Flask
 from flask import request
 
 app = Flask(__name__)
-token = os.environ['NOTION_TOKEN']
-client = NotionClient(token)
 
 """https://www.notion.so/remigallego/be7420b21a814bdeb93dcd2f1f99615e?v=772f2dabaac541c38761e3b288f163d3"""
 
@@ -37,6 +35,8 @@ def createNotionTask(token, collectionURL, content):
 
 @app.route('/get_collection', methods=['GET'])
 def get_collection():
+    token = request.args.get("token")
+    client = NotionClient(token)
     url = request.args.get('url')
     cv = client.get_collection_view(url)
     props = cv.collection.get_schema_properties()
