@@ -7,11 +7,10 @@ from notion.collection import NotionDate
 from notion.client import NotionClient
 from flask import Flask
 from flask import request
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 """https://www.notion.so/remigallego/be7420b21a814bdeb93dcd2f1f99615e?v=772f2dabaac541c38761e3b288f163d3"""
 
@@ -36,7 +35,6 @@ def createNotionTask(token, collectionURL, content):
      """
 
 @app.route('/get_collection', methods=['GET'])
-@cross_origin()
 def get_collection():
     token = request.args.get("token")
     client = NotionClient(token)
@@ -51,7 +49,6 @@ def get_collection():
     return response
 
 @app.route('/create_todo', methods=['POST'])
-@cross_origin()
 def create_todo():
     token = request.args.get("token")
     client = NotionClient(token)
@@ -69,4 +66,6 @@ def create_todo():
     return f"{values}"
  """
 if __name__ == '__main__':  
-    app.run()
+    app.debug = True
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, threaded=True)
