@@ -10,7 +10,7 @@ from flask import request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 """https://www.notion.so/remigallego/be7420b21a814bdeb93dcd2f1f99615e?v=772f2dabaac541c38761e3b288f163d3"""
 
