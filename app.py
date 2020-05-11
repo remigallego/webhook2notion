@@ -5,7 +5,6 @@ import json
 from datetime import datetime, date
 from notion.collection import NotionDate
 from notion.client import NotionClient
-from math import pi
 from flask import Flask
 from flask import request
 
@@ -30,11 +29,25 @@ def createNotionTask(token, collectionURL, content):
     row = cv.collection.add_row()
     row.title = content.title
     row.Date = NotionDate(content.date)
-    row.Status = "Not Started"
+    row.Sntatus = "Not Started"
      """
 
 @app.route('/get_collection', methods=['GET'])
 def get_collection():
+    token = request.args.get("token")
+    client = NotionClient(token)
+    url = request.args.get('url')
+    cv = client.get_collection_view(url)
+    props = cv.collection.get_schema_properties()
+    response = app.response_class(
+        response=json.dumps(props),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+@app.route('/create_todo', methods=['POST'])
+def create_todo():
     token = request.args.get("token")
     client = NotionClient(token)
     url = request.args.get('url')
@@ -50,7 +63,7 @@ def create_todo():
         print(values.get(key))
     return f"{values}"
  """
-if __name__ == '__main__':
+if __name__ == '__main__':  
     app.debug = True
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, threaded=True)
+    app.run(host='localhost', port=port, threaded=True)
