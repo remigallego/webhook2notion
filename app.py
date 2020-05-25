@@ -12,37 +12,78 @@ from flask_cors import CORS
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-"""https://www.notion.so/remigallego/be7420b21a814bdeb93dcd2f1f99615e?v=772f2dabaac541c38761e3b288f163d3"""
-
-""" class Todo:
-  title = ''
-  date = ''
-
-def construct_todo(title, date):
-    todo = Todo()
-    todo.title = title
-    todo.date = datetime.strptime(date, "%d-%m-%Y")
-    return todo
-
-def createNotionTask(token, collectionURL, content):
-    # notion
-    client = NotionClient(token)
-    cv = client.get_collection_view(collectionURL)
-    row = cv.collection.add_row()
-    row.title = content.title
-    row.Date = NotionDate(content.date)
-    row.Sntatus = "Not Started"
-     """
+def get_property_value_in_row(row, prop):
+    if(prop['type'] == 'relation'):
+            value = ''
+            block = row.get_property(prop['slug'])
+            for index, item in enumerate(block):
+                if(item is None):
+                    print('none')
+                else:
+                    if(hasattr(item, 'get_property')):
+                        if(index == 0):
+                            print(item)
+                            value = item.get_property('title')
+                        else:
+                            value = value + ', ' + item.get_property('title')
+                    
+    else:
+        value = row.get_property(prop['slug'])
+        if(type(value) == NotionDate):
+            dateFormatted = {
+                "start": value.start.isoformat(),
+            }
+            value = dateFormatted
+    return value
 
 @app.route('/get_collection', methods=['GET'])
 def get_collection():
+   
+
+    token = request.args.get("token")
+    client = NotionClient(token)
+    url = request.args.get('url')
+
+    obj = {
+        "properties": [],
+        "data": []
+    }
+
+    cv = client.get_collection_view(url)
+    cProperties = cv.collection.get_schema_properties()
+    obj['properties'] = cProperties
+    cRows = cv.collection.get_rows()
+
+    data = []
+    for row in cRows:
+        thisRow = {}
+        for prop in cProperties:
+            thisRow[prop['slug']] = get_property_value_in_row(row,prop)
+        data.append(thisRow)
+
+    obj['data'] = data
+
+    print(obj)
+    response = app.response_class(
+        response=json.dumps(obj),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+@app.route('/get_collection_rows', methods=['GET'])
+def get_collection_rows():
     token = request.args.get("token")
     client = NotionClient(token)
     url = request.args.get('url')
     cv = client.get_collection_view(url)
-    props = cv.collection.get_schema_properties()
+    rows = []
+    props = cv.collection.get_rows()
+    for row in props:
+        rows.append(row)
+
     response = app.response_class(
-        response=json.dumps(props),
+        response=json.dumps(rows),
         status=200,
         mimetype='application/json'
     )
@@ -54,7 +95,7 @@ def create_todo():
     client = NotionClient(token)
     url = request.args.get('url')
     cv = client.get_collection_view(url)
-    props = cv.collection.get_schema_properties()
+    props = cv.collection.get_rows()
     return json.dumps(props)
 
 """ @app.route('/create_todo', methods=['POST'])
@@ -68,4 +109,5 @@ def create_todo():
 if __name__ == '__main__':  
     app.debug = True
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, threaded=True)
+    app.run(host='localhost', port=port, threaded=True)
+
