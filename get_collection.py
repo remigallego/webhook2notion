@@ -19,7 +19,6 @@ def get_property_value_in_row(row, prop):
                 else:
                     if(hasattr(item, 'get_property')):
                         if(index == 0):
-                            print(item)
                             value = item.get_property('title')
                         else:
                             value = value + ', ' + item.get_property('title')
@@ -46,7 +45,29 @@ def get_collection():
 
     cv = client.get_collection_view(url)
     cProperties = cv.collection.get_schema_properties()
+    for prop in cProperties:
+        if(prop['type'] == 'relation'):
+            print("here")
+            options = []
+            relation = {
+                "slug": prop["slug"],
+                "options": []
+            }
+            ## list all options
+            collection = client.get_collection(prop['collection_id'])
+            project_rows = collection.get_rows()
+            print(project_rows)
+            for project_row in project_rows:
+                title = project_row.get_property("title")
+                id = project_row.id
+                options.append({
+                    "title": title,
+                    "id": id
+                })
+            prop["options"] = options
+                
     obj['properties'] = cProperties
+
     cRows = cv.collection.get_rows()
 
     data = []
@@ -58,7 +79,6 @@ def get_collection():
 
     obj['data'] = data
 
-    print(obj)
     response = app.response_class(
         response=json.dumps(obj),
         status=200,

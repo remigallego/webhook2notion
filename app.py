@@ -15,35 +15,40 @@ import get_collection
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/get_collection_rows', methods=['GET'])
-def get_collection_rows():
+@app.route('/create_entry', methods=['POST'])
+def create_entry():
     token = request.args.get("token")
+    content = request.get_json(silent=True)
+    print(content)
+    ## [{ value, slug, type }]
+
     client = NotionClient(token)
     url = request.args.get('url')
     cv = client.get_collection_view(url)
-    rows = []
-    props = cv.collection.get_rows()
-    for row in props:
-        rows.append(row)
+    row = cv.collection.add_row()
+
+    ## Types:
+    ##      date => NotionDate ✅
+    ##      relation => ????
+    ##      title => string ✅
+    ##      select => string ✅
+
+    for prop in content:
+        val = prop['value']
+        if(prop['type'] == 'date'):
+            datet = datetime.fromtimestamp(prop['value'])
+            val = NotionDate(datet)
+        row.set_property(prop['slug'], val)
 
     response = app.response_class(
-        response=json.dumps(rows),
         status=200,
         mimetype='application/json'
     )
     return response
-
-@app.route('/create_todo', methods=['POST'])
-def create_todo():
-    token = request.args.get("token")
-    client = NotionClient(token)
-    url = request.args.get('url')
-    cv = client.get_collection_view(url)
-    props = cv.collection.get_rows()
-    return json.dumps(props)
+   
+   
 
 if __name__ == '__main__':  
     app.debug = True
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, threaded=True)
-
+    port = int(os.environ.get("PORT", 4000))
+    app.run(host='localhost', port=port, threaded=True)
